@@ -1,121 +1,137 @@
 # Capstone Report
 
-**Author:** Mahin Attar
-**Lane:** Content Refresh Prioritization
-**Repo:** `<MA-1305/Project_Mahin-1305>`
-**Date:** 01 August 2026
+**Author:** Mahin Attar  
+**Lane:** Content Refresh Prioritization  
+**Repo:** `MA-1305/Project_Mahin-1305`  
+**Date:** 01 August 2026  
 
 ---
 
 # 0. Abstract
 
-This project focuses on predicting which existing web pages should be prioritized for content updates to improve search performance. The analysis was performed using the FlyRank Machine Learning Internship dataset containing approximately 79 million rows of production search data. A rule-based baseline was first created and then compared with a supervised Machine Learning model trained on carefully selected features while avoiding data leakage. The Machine Learning model achieved better predictive performance than the baseline and identified the most important factors affecting page refresh priority. The final output is a ranked list of pages that helps FlyRank editors and SEO teams decide which pages should be refreshed first.
+This project focuses on prioritizing existing web pages for content-refresh review using observable search and content-performance signals.
+
+The analysis uses the FlyRank Internship Starter Dataset, a public-safe anonymized 30,000-row slice containing page-level search and content-performance features across pseudonymized clients. The project first establishes a transparent rule-based baseline and then compares it with supervised Machine Learning models.
+
+The main ranking metric is Precision@50 because the practical decision is to identify a small set of pages that content teams should review first. The verified starter-dataset reference result shows that the rule baseline achieves Precision@50 of 0.26, while the Random Forest reaches 0.74.
+
+The final output is a ranked decision-support queue for content editors. The model is not treated as proof that refreshing a page will cause improved search performance. Human review remains necessary before any content changes are made.
 
 ---
 
 # 1. Problem Framing
 
-The objective of this project is to support content refresh decisions using Machine Learning.
+The objective of this project is to support content-refresh decisions using Machine Learning.
 
-**Decision Supported:** Determine which existing web pages should be updated first.
+**Decision Supported:** Determine which existing web pages should be reviewed first for a possible content refresh.
 
 **Unit of Analysis:** Individual web page.
 
-**Output:** A priority score or ranking indicating the likelihood that a page should be refreshed.
+**Output:** A priority score or ranking indicating which pages should receive earlier human review.
 
-**Human Action:** Editors review the highest-ranked pages and update content, headings, metadata, keywords, images, or internal links.
+**Human Action:** Editors review the highest-ranked pages and consider changes to content, headings, metadata, keywords, images, internal links, or other page elements.
 
-**Cost of a Wrong Decision:** If a page is incorrectly identified as high priority, valuable editing time is wasted. If an important page is missed, the website may lose opportunities to improve search visibility and user engagement.
+**Cost of a Wrong Decision:** If a page is incorrectly identified as high priority, valuable editing time may be wasted. If an important page is missed, an opportunity to investigate or improve search performance may be delayed.
 
-Machine Learning is suitable because many factors influence page performance simultaneously, making manual prioritization difficult. A trained model can learn patterns from historical data and produce consistent, data-driven recommendations.
+Machine Learning is suitable because multiple search and content signals can interact. A model can identify patterns across these signals and produce a consistent prioritization ranking.
 
 ---
 
 # 2. Data Safety
 
-The project uses the FlyRank ML Internship dataset for research and educational purposes.
+The project uses the FlyRank Internship Starter Dataset for educational and research purposes.
 
-To ensure fair model training, only relevant predictive features were used.
+The starter dataset contains 30,000 anonymized content-performance rows across pseudonymized clients. It contains numeric and categorical search/content metrics and does not include titles, URLs, keywords, domains, or client names.
 
-The following information was deliberately excluded:
+The following information was deliberately excluded from the model feature set:
 
-* Label-derived columns such as `trend_direction` and `trend_pct` because they directly contain target information.
-* Client identifiers and pseudonymous IDs, which were used only for grouping during validation and never as input features.
-* Any feature that could reveal future information unavailable at prediction time.
+* Target-derived fields such as `trend_direction` and `trend_pct`.
+* Product decision flags such as `health_score`, `needs_ctr_fix`, `is_quick_win`, and related fields because they can leak information about the decline label.
+* `client_id` as a predictive feature. It is used only for grouped validation.
+* Any information that would not be available at the intended prediction point.
 
-No client-identifying information is stored or published in the `work/` directory or anywhere in the repository.
+No client-identifying information is included in public outputs.
 
 ---
 
 # 3. Baseline
 
-Before building the Machine Learning model, a simple baseline approach was developed.
+Before building the Machine Learning model, a transparent rule-based baseline was developed.
 
-The baseline assigns page priority using transparent rules based on existing page metrics. This provides an easy-to-understand benchmark for comparison.
+The baseline combines observable signals related to visibility, freshness, search position, and content depth to produce a prioritization score.
 
-Both the baseline and the Machine Learning model were evaluated using the same train-test split and identical evaluation metrics.
+The purpose of the baseline is to provide a simple and interpretable benchmark against which the learned model can be compared.
 
-The Machine Learning model demonstrated better predictive performance than the baseline, showing that learning patterns from multiple variables provides more accurate prioritization than simple rule-based methods.
+The verified starter-dataset reference result reports:
+
+**Rule Baseline Precision@50: 0.26**
+
+The baseline is therefore useful as a transparent starting point, while the Machine Learning model can be evaluated on whether it improves the ranking of high-priority pages.
 
 ---
 
 # 4. Model / Analysis
 
-A supervised Machine Learning model was trained to predict content refresh priority.
+The task is treated as a classification and ranking problem.
 
-The model used features describing page performance and search behaviour while excluding information that could introduce data leakage.
+The proxy declining label is derived from the observed trend direction:
 
-Example features include:
+`is_declining_label = trend_direction == "down"`
 
-* Clicks
+The model uses observable search and content-performance features such as:
+
+* Search volume
+* Competition
+* CPC
 * Impressions
-* Click-Through Rate (CTR)
-* Average Position
-* Search Volume
-* Content Freshness Indicators
-* Historical Performance Metrics
+* Clicks
+* Sessions
+* Content age
+* Days since last update
+* CTR
+* Engagement rate
+* Scroll rate
+* AI traffic percentage
+* Relevant categorical content and search fields
 
-Excluded features include:
+Target-derived and leakage-prone fields are excluded from the feature matrix.
 
-* `trend_direction`
-* `trend_pct`
-* Client identifiers
-* Any target-derived information
+A Random Forest model is used because it can capture nonlinear relationships and interactions among multiple numeric and categorical signals.
 
-**Target Definition:** The model predicts whether a page should receive higher priority for content refresh based on historical search performance.
+The model output is converted into a ranking so that content teams can review the highest-priority pages first.
 
 ---
 
 # 5. Evaluation
 
-The dataset was divided into separate training and testing datasets using an appropriate validation strategy that prevented information leakage.
+The primary evaluation metric is **Precision@50** because the practical objective is to prioritize a limited number of pages for human review.
 
-The following evaluation metrics were used:
+The verified starter-dataset reference results are:
 
-* Accuracy
-* Precision
-* Recall
-* F1 Score
-The Machine Learning model consistently outperformed the baseline using the same evaluation split.
+| Method | Precision@50 |
+|---|---:|
+| Rule Baseline | 0.26 |
+| Random Forest | 0.74 |
 
-Error analysis showed that most incorrect predictions occurred for pages with performance values close to the decision boundary, where distinguishing between medium- and high-priority pages is naturally more difficult.
+The Random Forest therefore provides a substantially stronger top-50 ranking than the transparent baseline on the starter dataset.
 
-These results indicate that the model provides useful decision support while still requiring human review for uncertain cases.
+The evaluation should be interpreted as measured performance on the available anonymized starter slice. It does not establish that refreshing a recommended page will cause improved search performance.
+
+Client-holdout validation is used where applicable to reduce the risk of information overlap between training and testing clients.
 
 ---
 
 # 6. Interpretation
 
-Feature importance analysis showed that search performance metrics contributed most strongly to the predictions.
+The analysis indicates that observable search and content-performance signals can provide useful information for prioritizing pages for review.
 
-The model learned several useful patterns:
+Important signals include visibility, freshness, CTR, search performance, and engagement-related measurements.
 
-* Pages showing declining search performance often received higher refresh priority.
-* Pages with low click-through rates despite strong visibility frequently benefited from content updates.
-* Historical engagement metrics were important indicators of refresh opportunity.
-* Some variables expected to influence performance contributed very little, showing that not every commonly assumed SEO factor has measurable predictive value.
+The analysis also demonstrates that commonly assumed relationships should be tested rather than assumed. For example, the starter-dataset reference results show an approximately zero correlation between `search_volume` and `impressions_90d`, indicating that search volume should not automatically be treated as a direct proxy for impressions.
 
-These findings help explain why the model recommends certain pages and improve confidence in its predictions.
+The model's predictions should therefore be interpreted as evidence for prioritization rather than causal explanations.
+
+Feature importance can help explain which variables contributed most to model predictions, but feature importance alone does not establish that a variable causes page decline.
 
 ---
 
@@ -126,51 +142,48 @@ The model should be used as a decision-support system for content editors.
 Recommended workflow:
 
 1. Generate page priority scores.
-2. Review the highest-ranked pages.
-3. Update page content, titles, metadata, and internal links.
-4. Republish updated pages.
-5. Monitor search performance after the refresh.
+2. Rank pages by model score.
+3. Review the highest-ranked pages first.
+4. Check current search performance and recent content changes.
+5. Evaluate search intent and content quality.
+6. Decide whether a refresh is appropriate.
+7. Republish approved changes.
+8. Monitor subsequent search performance.
 
-Editors should prioritize pages receiving the highest model scores while also considering business goals and editorial judgement.
+Editors should consider model scores together with business goals and editorial judgment.
 
-Confidence in these recommendations is moderate because they are based on historical observational data rather than controlled experiments.
+The model should **not** automatically publish content, delete pages, change metadata, or make business decisions.
 
-The model should assist human decision-making rather than replace it.
+Confidence in the recommendations is moderate because the analysis is based on observational data and a proxy target rather than a controlled experiment.
 
 ---
 
 # 8. Reproducibility
 
-The complete project can be reproduced using the following steps.
+The project can be reproduced from the GitHub repository:
 
-```bash
-git clone <Project_Mahin-1305>
+`MA-1305/Project_Mahin-1305`
 
-cd <Project_Mahin-1305>
+The notebooks should be executed in numerical order, beginning with the task-framing and feature/leakage work and continuing through modeling, validation, and the action playbook.
 
-pip install -r requirements.txt
+Random seeds should be fixed wherever stochastic model training or splitting is used.
 
-jupyter notebook
-```
+The required Python packages should be documented in `requirements.txt`.
 
-Run all notebooks in numerical order until the final evaluation notebook completes.
+The analysis should produce the relevant model outputs, validation results, ranked recommendations, and action queue under the repository's `work/` directory.
 
-Random seeds were fixed during model training to ensure reproducibility.
-
-The software environment is documented through the included `requirements.txt` file.
-
-If a sealed or holdout evaluation is included, both the script that creates the evaluation dataset and the generated metrics file are committed to the repository so that the evaluation process can be independently verified.
+The public repository should contain only anonymized and safe outputs. Raw or client-identifying data should not be published.
 
 ---
 
 # 9. Acknowledgments & Data Credit
 
-This project was built using the **FlyRank ML Internship Dataset**.
+This project was completed as part of the FlyRank ML Internship.
 
-Data source: **[https://flyrank.ai](https://huggingface.co/datasets/FlyRank/internship-warehouse)**
+The analysis uses the **FlyRank Internship Starter Dataset (Anonymized)**, which is provided as a public-safe 30,000-row starter dataset for the internship. The dataset contains pseudonymized client/content identifiers and numeric/categorical metrics without titles, URLs, keywords, domains, or client names.
 
-The FlyRank dataset was used solely for educational and research purposes during this Machine Learning internship. Credit is given to FlyRank for providing the dataset used throughout this capstone project.
+Dataset: `FlyRank/internship-starter`
 
----
+The dataset is used for educational and research purposes under the FlyRank data-use conditions.
 
-
+Credit is given to FlyRank for providing the dataset and internship framework.
