@@ -1,10 +1,11 @@
-Capstone Report
-Author: Mahin Attar
-Lane: Content Refresh Prioritization
-Repo: MA-1305/Project_Mahin-1305
-Date: 01 August 2026
+# Capstone Report
 
-0. Abstract
+**Author: **Mahin Attar
+**Lane: **Content Refresh Prioritization
+**Repo: **MA-1305/Project_Mahin-1305
+**Date: **01 August 2026
+
+## 0. Abstract
 This project focuses on prioritizing existing web pages for content-refresh review using observable search and content-performance signals.
 
 The analysis uses the FlyRank Internship Starter Dataset, a public-safe anonymized 30,000-row slice containing page-level search and content-performance features across pseudonymized clients. The project first establishes a transparent rule-based baseline and then compares it with supervised Machine Learning models.
@@ -13,7 +14,7 @@ The main ranking metric is Precision@50 because the practical decision is to ide
 
 The final output is a ranked decision-support queue for content editors. The model is not treated as proof that refreshing a page will cause improved search performance. Human review remains necessary before any content changes are made.
 
-1. Problem Framing
+## 1. Problem Framing
 The objective of this project is to support content-refresh decisions using Machine Learning.
 
 Decision Supported: Determine which existing web pages should be reviewed first for a possible content refresh.
@@ -28,7 +29,7 @@ Cost of a Wrong Decision: If a page is incorrectly identified as high priority, 
 
 Machine Learning is suitable because multiple search and content signals can interact. A model can identify patterns across these signals and produce a consistent prioritization ranking.
 
-2. Data Safety
+## 2. Data Safety
 The project uses the FlyRank Internship Starter Dataset for educational and research purposes.
 
 The starter dataset contains 30,000 anonymized content-performance rows across pseudonymized clients. It contains numeric and categorical search/content metrics and does not include titles, URLs, keywords, domains, or client names.
@@ -41,7 +42,7 @@ client_id as a predictive feature. It is used only for grouped validation.
 Any information that would not be available at the intended prediction point.
 No client-identifying information is included in public outputs.
 
-3. Baseline
+## 3. Baseline
 Before building the Machine Learning model, a transparent rule-based baseline was developed.
 
 The baseline combines observable signals related to visibility, freshness, search position, and content depth to produce a prioritization score.
@@ -54,7 +55,7 @@ Rule Baseline Precision@50: 0.26
 
 The baseline is therefore useful as a transparent starting point, while the Machine Learning model can be evaluated on whether it improves the ranking of high-priority pages.
 
-4. Model / Analysis
+## 4. Model / Analysis
 The task is treated as a classification and ranking problem.
 
 The proxy declining label is derived from the observed trend direction:
@@ -82,7 +83,7 @@ A Random Forest model is used because it can capture nonlinear relationships and
 
 The model output is converted into a ranking so that content teams can review the highest-priority pages first.
 
-5. Evaluation
+## 5. Evaluation
 The primary evaluation metric is Precision@50 because the practical objective is to prioritize a limited number of pages for human review.
 
 The verified starter-dataset reference results are:
@@ -96,7 +97,7 @@ The evaluation should be interpreted as measured performance on the available an
 
 Client-holdout validation is used where applicable to reduce the risk of information overlap between training and testing clients.
 
-6. Interpretation
+## 6. Interpretation
 The analysis indicates that observable search and content-performance signals can provide useful information for prioritizing pages for review.
 
 Important signals include visibility, freshness, CTR, search performance, and engagement-related measurements.
@@ -107,7 +108,7 @@ The model's predictions should therefore be interpreted as evidence for prioriti
 
 Feature importance can help explain which variables contributed most to model predictions, but feature importance alone does not establish that a variable causes page decline.
 
-7. Recommendation
+## 7. Recommendation
 The model should be used as a decision-support system for content editors.
 
 Recommended workflow:
@@ -126,7 +127,7 @@ The model should not automatically publish content, delete pages, change metadat
 
 Confidence in the recommendations is moderate because the analysis is based on observational data and a proxy target rather than a controlled experiment.
 
-8. Reproducibility
+## 8. Reproducibility
 The project can be reproduced from the GitHub repository:
 
 MA-1305/Project_Mahin-1305
@@ -141,7 +142,7 @@ The analysis should produce the relevant model outputs, validation results, rank
 
 The public repository should contain only anonymized and safe outputs. Raw or client-identifying data should not be published.
 
-9. Acknowledgments & Data Credit
+## 9. Acknowledgments & Data Credit
 This project was completed as part of the FlyRank ML Internship.
 
 The analysis uses the FlyRank Internship Starter Dataset (Anonymized), which is provided as a public-safe 30,000-row starter dataset for the internship. The dataset contains pseudonymized client/content identifiers and numeric/categorical metrics without titles, URLs, keywords, domains, or client names.
